@@ -8,6 +8,15 @@ export interface SquarePaymentFormConstructor {
     new(options: SquareFormOptions): SquarePaymentForm;
 }
 
+export interface SquareSuccessPayload {
+    billingPostalCode: string;
+    cardBrand: string;
+    digitalWalletType: string;
+    expMonth: number;
+    expYear: number;
+    last4: number;
+}
+
 export interface SquareFormOptions {
     applicationId: string;
     env: string;
@@ -19,6 +28,7 @@ export interface SquareFormOptions {
     cvv: SquareFormElement;
     expirationDate: SquareFormElement;
     postalCode: SquareFormElement;
+    masterpass: SquareFormElement;
 }
 
 /**

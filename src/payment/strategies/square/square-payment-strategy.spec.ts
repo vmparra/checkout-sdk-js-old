@@ -15,6 +15,9 @@ import PaymentMethod from '../../payment-method';
 import SquarePaymentForm, { SquareFormCallbacks, SquareFormOptions } from './square-form';
 import SquarePaymentStrategy from './square-payment-strategy';
 import SquareScriptLoader from './square-script-loader';
+import RequestFactory from '@bigcommerce/request-sender/lib/request-factory';
+import PayloadTransformer from '@bigcommerce/request-sender/lib/payload-transformer';
+import { createFormPoster } from '@bigcommerce/form-poster';
 
 describe('SquarePaymentStrategy', () => {
     let scriptLoader: SquareScriptLoader;
@@ -26,6 +29,7 @@ describe('SquarePaymentStrategy', () => {
     let callbacks: SquareFormCallbacks;
     let submitOrderAction: Observable<Action>;
     let submitPaymentAction: Observable<Action>;
+    let senderRequest = createRequestSender();
 
     const formFactory = (options: SquareFormOptions) => {
         if (options.callbacks) {
@@ -58,14 +62,26 @@ describe('SquarePaymentStrategy', () => {
         paymentMethod = getSquare();
         orderActionCreator = new OrderActionCreator(
             createCheckoutClient(),
-            new CheckoutValidator(new CheckoutRequestSender(createRequestSender()))
+            new CheckoutValidator(
+                new CheckoutRequestSender(
+                    senderRequest
+            )
+        )
         );
         paymentActionCreator = new PaymentActionCreator(
             new PaymentRequestSender(createPaymentClient()),
             orderActionCreator
         );
+
         scriptLoader = new SquareScriptLoader(createScriptLoader());
-        strategy = new SquarePaymentStrategy(store, orderActionCreator, paymentActionCreator, scriptLoader);
+        strategy = new SquarePaymentStrategy(
+            store,
+            orderActionCreator,
+            paymentActionCreator,
+            scriptLoader,
+            senderRequest,
+            createFormPoster() 
+        );
         submitOrderAction = Observable.of(createAction(OrderActionType.SubmitOrderRequested));
         submitPaymentAction = Observable.of(createAction(PaymentActionType.SubmitPaymentRequested));
 
