@@ -157,6 +157,14 @@ describe('SquarePaymentStrategy', () => {
                 methodId: 'foo',
             },
         };
+        const cardData = {
+            billing_postal_code: '12345',
+            card_brand: 'MASTERCARD',
+            digital_wallet_type: 'MASTERPASS',
+            exp_month: 12,
+            exp_year: 2099,
+            last_4: '1111',
+        };
 
         describe('when form has not been initialized', () => {
             it('rejects the promise', () => {
@@ -191,7 +199,7 @@ describe('SquarePaymentStrategy', () => {
                 expect(squareForm.requestCardNonce).toHaveBeenCalledTimes(1);
             });
 
-            it('cancels the first request when a newer is made', async () => {
+            it('cancels the first request when a newer is made', () => {
                 strategy.execute(payload).catch(e => expect(e).toBeInstanceOf(TimeoutError));
 
                 setTimeout(() => {
@@ -200,22 +208,37 @@ describe('SquarePaymentStrategy', () => {
                     }
                 }, 0);
 
-                await strategy.execute(payload);
+                strategy.execute(payload);
             });
 
-            describe('when the nonce is received', () => {
+            describe('when the nonce is received', async () => {
                 let promise: Promise<InternalCheckoutSelectors>;
+                const options = { 
+                    cardNumber: '411111111111111', 
+                    cvv: '123', 
+                    expirationDate: '12/99', 
+                    masterpass: true, 
+                    postalCode: '12345'
+                };
+                const cardData = {
+                    billing_postal_code: '12345',
+                    card_brand: 'MASTERCARD',
+                    digital_wallet_type: 'MASTERPASS',
+                    exp_month: 12,
+                    exp_year: 2099,
+                    last_4: '1111',
+                };
 
                 beforeEach(() => {
                     promise = strategy.execute({ payment: { methodId: 'square' }, useStoreCredit: true });
 
                     if (callbacks.cardNonceResponseReceived) {
-                        callbacks.cardNonceResponseReceived(null, 'nonce');
+                        callbacks.cardNonceResponseReceived({}, 'nonce');
                     }
                 });
 
                 it('places the order with the right arguments', () => {
-                    expect(orderActionCreator.submitOrder).toHaveBeenCalledWith({ useStoreCredit: true }, undefined);
+                    expect(orderActionCreator.submitOrder).toHaveBeenCalledWith({ useStoreCredit: true }, options);
                     expect(store.dispatch).toHaveBeenCalledWith(submitOrderAction);
                 });
 
@@ -256,7 +279,11 @@ describe('SquarePaymentStrategy', () => {
                 });
 
                 it('rejects the promise', async () => {
-                    await promise.catch(error => expect(error).toBeTruthy());
+                    try {
+                        await promise;
+                    } catch (e) {
+                        expect(e).toBeTruthy()
+                    }
                 });
             });
         });
