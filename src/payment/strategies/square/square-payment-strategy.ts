@@ -118,7 +118,10 @@ export default class SquarePaymentStrategy extends PaymentStrategy {
                     if (cardData.digitalWalletType !== DigitalWalletType.none) {
                         this._setExternalCheckoutData(cardData, nonce)
                         .then(() => {
-                            this._reloadPage();
+                            if (squareOptions.onPaymentSelect) {
+                                squareOptions.onPaymentSelect();
+                            }
+                            //this._reloadPage();
                         });
                     } else {
                         this._cardNonceResponseReceived(errors, nonce);
@@ -238,4 +241,9 @@ export interface SquarePaymentInitializeOptions {
 
     // Initialize Masterpass placeholder ID
     masterpass?: SquareFormElement;
+
+    /**
+     * A callback that gets called when the customer selects a payment option.
+     */
+    onPaymentSelect?(): void;
 }
