@@ -121,7 +121,7 @@ export default class SquarePaymentStrategy extends PaymentStrategy {
                             if (squareOptions.onPaymentSelect) {
                                 squareOptions.onPaymentSelect();
                             }
-                            this._reloadPage();
+                            //this._reloadPage();
                         });
                     } else {
                         this._cardNonceResponseReceived(errors, nonce);
