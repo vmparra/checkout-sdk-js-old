@@ -160,11 +160,14 @@ export default function createPaymentStrategyRegistry(
     registry.register('squarev2', () =>
         new SquarePaymentStrategy(
             store,
+            new CheckoutActionCreator(checkoutRequestSender, configActionCreator),
+            paymentMethodActionCreator,
             orderActionCreator,
             paymentActionCreator,
             new SquareScriptLoader(scriptLoader),
             requestSender,
-            createFormPoster()
+            createFormPoster(),
+            new PaymentStrategyActionCreator(registry, orderActionCreator),
         )
     );
 
