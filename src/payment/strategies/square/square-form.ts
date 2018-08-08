@@ -42,7 +42,7 @@ export interface CardData {
     exp_month: number;
     exp_year: number;
     billing_postal_code: string;
-    digital_wallet_type: string;
+    digital_wallet_type: DigitalWalletType;
 }
 
 export interface Contact {
@@ -66,6 +66,12 @@ export enum CardBrand {
     unionPay,
     unknown,
     visa,
+}
+
+export enum DigitalWalletType {
+    applePay = 'APPLEPAY',
+    masterpass = 'MASTERPASS',
+    none = 'NONE',
 }
 
 /**

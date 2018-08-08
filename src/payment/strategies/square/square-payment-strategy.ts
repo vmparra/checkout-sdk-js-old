@@ -19,7 +19,7 @@ import PaymentActionCreator from '../../payment-action-creator';
 import { PaymentInitializeOptions, PaymentRequestOptions } from '../../payment-request-options';
 import PaymentStrategy from '../payment-strategy';
 
-import SquarePaymentForm, { CardData, Contact, NonceGenerationError, SquareFormElement, SquareFormOptions, SquareValidationErrors } from './square-form';
+import SquarePaymentForm, { CardData, Contact, NonceGenerationError, SquareFormElement, SquareFormOptions, SquareValidationErrors, DigitalWalletType } from './square-form';
 import SquareScriptLoader from './square-script-loader';
 
 export default class SquarePaymentStrategy extends PaymentStrategy {
@@ -117,11 +117,18 @@ export default class SquarePaymentStrategy extends PaymentStrategy {
                 },
                 cardNonceResponseReceived: (errors: NonceGenerationError[] | undefined, nonce: string, cardData: CardData | undefined,
                                             billingContact: Contact | undefined, shippingContact: Contact | undefined) => {
+                    if (cardData) {
+                        console.log(cardData.digital_wallet_type);
+                        console.log(DigitalWalletType.none);
+                        console.log(cardData.digital_wallet_type === DigitalWalletType.none);
+                    }
                     if (!cardData) {
                         if (errors) {
                             this._handleNonceGenerationErrors(errors);
                         }
-                    } else if (cardData.digital_wallet_type !== 'NONE') {
+                    } else if (cardData.digital_wallet_type !== DigitalWalletType.none) {
+                        console.log(cardData);
+                        console.log('MASTERPASS');
                         this._setExternalCheckoutData(cardData, nonce)
                         .then(() => {
                             this._paymentInstrumentSelected(methodId)
@@ -132,6 +139,7 @@ export default class SquarePaymentStrategy extends PaymentStrategy {
                             });
                         });
                     } else {
+                        console.log('SQUARE');
                         this._cardNonceResponseReceived(nonce, errors);
                     }
                 },

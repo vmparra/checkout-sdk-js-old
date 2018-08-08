@@ -219,7 +219,7 @@ describe('SquarePaymentStrategy', () => {
 
                 setTimeout(() => {
                     if (callbacks.cardNonceResponseReceived) {
-                        callbacks.cardNonceResponseReceived(null, 'nonce');
+                        //.cardNonceResponseReceived(null, 'nonce');
                     }
                 }, 0);
 
@@ -240,7 +240,7 @@ describe('SquarePaymentStrategy', () => {
                     promise = strategy.execute({ payment: { methodId: 'square' }, useStoreCredit: true });
 
                     if (callbacks.cardNonceResponseReceived) {
-                        callbacks.cardNonceResponseReceived({}, 'nonce');
+                        //callbacks.cardNonceResponseReceived({}, 'nonce');
                     }
                 });
 
@@ -272,7 +272,7 @@ describe('SquarePaymentStrategy', () => {
                     promise = strategy.execute(payload);
 
                     if (callbacks.cardNonceResponseReceived) {
-                        callbacks.cardNonceResponseReceived({}, 'nonce');
+                        //callbacks.cardNonceResponseReceived({}, 'nonce');
                     }
                 });
 
